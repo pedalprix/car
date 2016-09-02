@@ -42,7 +42,7 @@ def JSON_Header():
    global msg_type
    global RFID_Log_Msg_count
    Header = '{"Time":"' + datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SACST')
-   Header +='","Msg_count":"'+ str(GPS_Log_Msg_count)
+   Header +='","Msg_Count":"'+ str(GPS_Log_Msg_count)
    Header +='","Car_Name":"' + car_name
    Header +='","Msg_Type":"' + msg_type
    Header +='","Msg":['
