@@ -26,9 +26,12 @@ def is_json(myjson):
 configfile = open('Car-config.json', 'r')
 configjson = configfile.read()
 configfile.close()
+if is_json(configjson): 
+  json_data = json.loads(configjson)
+else:
+  print "ERROR: Car-config.json not valid json"
+  sys.exit()
 
-# parse configdata
-json_data = json.loads(configjson)
 car_name = json_data['Car_Name']
 
 RFID_LOG_IP = json_data['RFID_LOG_IP']
@@ -45,7 +48,12 @@ def JSON_Header():
    global car_name
    global msg_type
    global RFID_Log_Msg_count
-   return '{"Car_Name":"' + car_name + '","Msg_Type":"' + msg_type + '","Msg_count":"'+ str(RFID_Log_Msg_count) + ',"Msg":['
+   Header = '{"Time":"' + datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SACST')
+   Header +='","Msg_count":"'+ str(RFID_Log_Msg_count)
+   Header +='","Car_Name":"' + car_name
+   Header +='","Msg_Type":"' + msg_type
+   Header +=',"Msg":['
+   return Header
 
 JSON_Footer = ']}'
 
@@ -72,11 +80,7 @@ try:
       # If we have the UID, continue
       if status == MIFAREReader.MI_OK:
 
-        RFID_json = '{"time":"'
-        RFID_json += datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        RFID_json += '","RFID-UID":"'
-        RFID_json += str(uid)
-        RFID_json += '"}'
+        RFID_json = '{"RFID-UID":"' + str(uid) + '"}'
 
         # Create valid JSON and send to RFID log
 
@@ -90,7 +94,7 @@ try:
         (status,uid) = MIFAREReader.MFRC522_Anticoll()
       else:
         print "Status : ", status
-      time.sleep(10)
+      time.sleep(RFID_POLL_DELAY)
 
 except:
    print "Exception detected."

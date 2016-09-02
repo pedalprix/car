@@ -4,6 +4,7 @@
 import socket
 import json
 import time
+import datetime
 
 def is_json(myjson):
   try:
@@ -29,8 +30,8 @@ GPS_POLL_DELAY = float(json_data['GPS_POLL_DELAY'])
 
 msg_type = "GPS"
 
-GPSD_INIT_msg = '?WATCH={"enable":true,"json":true}'
-GPSD_POLL_msg = '?POLL;'
+GPSD_INIT_msg = """?WATCH={"enable":true,"json":true}"""
+GPSD_POLL_msg = """?POLL;"""
 GPSD_ADDR = (GPSD_IP, GPSD_PORT)
 GPS_LOG_ADDR = (GPS_LOG_IP, GPS_LOG_PORT)
 
@@ -39,8 +40,13 @@ GPS_Log_Msg_count = 0
 def JSON_Header():
    global car_name
    global msg_type
-   global Msg_count
-   return = '{"Car_Name":"' + car_name + '","Msg_Type":"' + msg_type + '","Msg_count":"'+ GPS_Log_Msg_count + ',"Msg":['
+   global RFID_Log_Msg_count
+   Header = '{"Time":"' + datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SACST')
+   Header +='","Msg_count":"'+ str(GPS_Log_Msg_count)
+   Header +='","Car_Name":"' + car_name
+   Header +='","Msg_Type":"' + msg_type
+   Header +=',"Msg":['
+   return Header
 
 JSON_Footer = ']}'
 
@@ -53,23 +59,21 @@ sGPSD.connect(GPSD_ADDR)
 
 # fetch version info sent to us as a result of connecting
 GPSD_json = sGPSD.recv(GPSD_BUFFER_SIZE)
-print "== GPSD connecion response follows =="
-print GPSD_json
 
 # send response to GPS log
 GPS_Log_Msg_count += 1
 MESSAGE = JSON_Header() + GPSD_json + JSON_Footer
 sGPS_Log.sendto(MESSAGE, GPS_LOG_ADDR)
+print "Sending Message received from initial connection to GPSD ==="
+print MESSAGE
 
 # Initialise connection with GPSD
 sGPSD.send(GPSD_INIT_msg)
 GPSD_json = sGPSD.recv(GPSD_BUFFER_SIZE)
-print "== GPSD response from sending : ",GPSD_INIT_msg
-print GPSD_json
-
-# send response to GPS log
 GPS_Log_Msg_count += 1
 MESSAGE = JSON_Header() + GPSD_json + JSON_Footer
+print "Sending Message received from sending : ",GPSD_INIT_msg
+print MESSAGE
 sGPS_Log.sendto(MESSAGE, GPS_LOG_ADDR)
 
 try:
@@ -78,15 +82,13 @@ try:
       sGPSD.send(GPSD_POLL_msg)
       GPSD_json = sGPSD.recv(GPSD_BUFFER_SIZE)
 
-      if is_json(GPSD_msg): # If it's valid JSON send to GPS log
+      if is_json(GPSD_json): # If it's valid JSON send to GPS log
          GPS_Log_Msg_count += 1
          MESSAGE = JSON_Header() + GPSD_json + JSON_Footer
+         print "Sending Message ==============================="
+         print MESSAGE
          sGPS_Log.sendto(MESSAGE, GPS_LOG_ADDR)
-
-      else:
-         print "Invalid JSON detected"
-
-      time.sleep(GPS_POLL_DELAY)
+         time.sleep(GPS_POLL_DELAY)
 
 except:
    print "Exception detected."

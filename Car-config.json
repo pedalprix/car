@@ -3,15 +3,15 @@
 
    "GPSD_IP":"127.0.0.1",
    "GPSD_PORT":2947,
-   "GPSD_BUFFER":60000,
+   "GPSD_BUFFER_SIZE":60000,
 
-   "GPS_LOG_IP":"127.0.0.1",
+   "GPS_LOG_IP":"192.168.1.4",
    "GPS_LOG_PORT":2950,
-   "GPS_POLL_DELAY":1.0,
+   "GPS_POLL_DELAY":2,
 
-   "RFID_LOG_IP":"127.0.0.1",
+   "RFID_LOG_IP":"192.168.1.4",
    "RFID_LOG_PORT":2950,
-   "RFID_POLL_DELAY":10.0,
+   "RFID_POLL_DELAY":3,
 
    "Car_ID":
    [
