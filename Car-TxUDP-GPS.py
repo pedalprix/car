@@ -45,7 +45,7 @@ def JSON_Header():
    Header +='","Msg_count":"'+ str(GPS_Log_Msg_count)
    Header +='","Car_Name":"' + car_name
    Header +='","Msg_Type":"' + msg_type
-   Header +=',"Msg":['
+   Header +='","Msg":['
    return Header
 
 JSON_Footer = ']}'
