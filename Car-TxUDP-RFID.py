@@ -52,7 +52,7 @@ def JSON_Header():
    Header +='","Msg_count":"'+ str(RFID_Log_Msg_count)
    Header +='","Car_Name":"' + car_name
    Header +='","Msg_Type":"' + msg_type
-   Header +=',"Msg":['
+   Header +='","Msg":['
    return Header
 
 JSON_Footer = ']}'
