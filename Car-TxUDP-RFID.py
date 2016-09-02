@@ -5,8 +5,12 @@ import socket
 import json
 import time
 import RPi.GPIO as GPIO
-import MFRC522
 import datetime
+
+import sys
+sys.path.append("/home/pi/SPI-Py/MFRC522-python-mxgxw")
+import MFRC522
+
 
 def is_json(myjson):
   try:
@@ -38,7 +42,7 @@ def JSON_Header():
    global car_name
    global msg_type
    global RFID_Log_Msg_count
-   return = '{"Car_Name":"' + car_name + '","Msg_Type":"' + msg_type + '","Msg_count":"'+ RFID_Log_Msg_count + ',"Msg":['
+   return '{"Car_Name":"' + car_name + '","Msg_Type":"' + msg_type + '","Msg_count":"'+ str(RFID_Log_Msg_count) + ',"Msg":['
 
 JSON_Footer = ']}'
 
@@ -49,32 +53,38 @@ sRFID_Log = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 MIFAREReader = MFRC522.MFRC522()
 
 # send response to RFID log
-RFID_Log_Msg_count += 1
-MESSAGE = JSON_Header() + RFID_msg + JSON_Footer
-sRFID_Log.sendto(MESSAGE, RFID_LOG_ADDR)
+#RFID_Log_Msg_count += 1
+#MESSAGE = JSON_Header() + RFID_msg + JSON_Footer
+#sRFID_Log.sendto(MESSAGE, RFID_LOG_ADDR)
 
 try:
    while True:
-      # Scan for cards    
+
+      # Scan for cards
       (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
       # Get the UID of the card
       (status,uid) = MIFAREReader.MFRC522_Anticoll()
 
-      # Get the datetime
-      RFIDtime = datetime.now().strftime('%Y-%m-%dT%H.%M.%SZ')
-
       # If we have the UID, continue
       if status == MIFAREReader.MI_OK:
 
         # Print UID
-        UID_str = "["+str(uid[0])+","+str(uid[1])+","+str(uid[2])+","+str(uid[3])+","+str(uid[4])+","+str(uid[5])+","+str(uid[6])+"]"
-	RFID_json = '{"time":"' + RFIDtime + '","RFID-UID":"' + UID_Str + '"}'
+        RFID_json = '{"time":"'
+        RFID_json += datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        RFID_json += '","RFID-UID":"'
+        RFID_json += str(uid)
+        RFID_json += '"}'
+        print RFID_json
 
-      # Create valid JSON and send to RFID log
-      RFID_Log_Msg_count += 1
-      MESSAGE = JSON_Header() + RFID_json + JSON_Footer
-      sRFID_Log.sendto(MESSAGE, RFID_LOG_ADDR)
+        # Create valid JSON and send to RFID log
+
+        RFID_Log_Msg_count += 1
+        MESSAGE = JSON_Header() + RFID_json + JSON_Footer
+        print "MESSAGE :", MESSAGE
+        sRFID_Log.sendto(MESSAGE, RFID_LOG_ADDR)
+      else:
+        print "Status", status
 
       time.sleep(RFID_POLL_DELAY)
 
