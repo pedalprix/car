@@ -36,7 +36,7 @@ GPS_LOG_ADDR = (GPS_LOG_IP, GPS_LOG_PORT)
 
 GPS_Log_Msg_count = 0
 
-def JSON_Header:
+def JSON_Header():
    global car_name
    global msg_type
    global Msg_count
