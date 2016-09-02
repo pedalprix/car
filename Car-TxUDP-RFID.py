@@ -34,7 +34,7 @@ RFID_LOG_ADDR = (RFID_LOG_IP, RFID_LOG_PORT)
 
 RFID_Log_Msg_count = 0
 
-def JSON_Header:
+def JSON_Header():
    global car_name
    global msg_type
    global RFID_Log_Msg_count
