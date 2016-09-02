@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # RFID UDP Tx
+#
+#
+# TODO 
 
 import socket
 import json
@@ -69,13 +72,11 @@ try:
       # If we have the UID, continue
       if status == MIFAREReader.MI_OK:
 
-        # Print UID
         RFID_json = '{"time":"'
         RFID_json += datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         RFID_json += '","RFID-UID":"'
         RFID_json += str(uid)
         RFID_json += '"}'
-        print RFID_json
 
         # Create valid JSON and send to RFID log
 
@@ -83,10 +84,13 @@ try:
         MESSAGE = JSON_Header() + RFID_json + JSON_Footer
         print "MESSAGE :", MESSAGE
         sRFID_Log.sendto(MESSAGE, RFID_LOG_ADDR)
-      else:
-        print "Status", status
 
-      time.sleep(RFID_POLL_DELAY)
+        # The next two seem to reset/flush the reader
+        (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
+        (status,uid) = MIFAREReader.MFRC522_Anticoll()
+      else:
+        print "Status : ", status
+      time.sleep(10)
 
 except:
    print "Exception detected."
