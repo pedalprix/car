@@ -7,4 +7,4 @@
 #./python Car-TxUDP-RFID.py &
 
 ls
-echo "Hello Steve!"
+echo "Hello Steve, Ben and Nathan!"
