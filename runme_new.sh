@@ -3,7 +3,7 @@
 echo "PedalPrix: Start runme.sh"
 
 echo "PedalPrix: Waiting for connection"
-while ! ping -c1 www.google.com &>/dev/null; do sleep 2; done
+while ! ping -c1 www.google.com &>/dev/null; do :; done
 
 echo "PedalPrix: Checking for git change"
 git fetch origin master
